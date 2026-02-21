@@ -1,0 +1,40 @@
+{
+  "id": "overlap-token-viewer",
+  "title": "Overlap Token Viewer",
+  "version": "1.0.0",
+  "compatibility": {
+    "minimum": "13",
+    "verified": "13",
+    "maximum": "13"
+  },
+  "description": "<p>当多个Token重叠在同一格子时，自动以饼图切片方式显示，便于识别和交互。支持悬停高亮、点击选中、右键设为目标，以及快捷键打开Token列表弹窗。</p>",
+  "authors": [
+    {
+      "name": "icemoe",
+      "email": "lengxiaohua@icemoe.moe",
+      "discord": "lengxiaohua",
+      "flags": {}
+    }
+  ],
+  "esmodules": [
+    "scripts/main.js"
+  ],
+  "styles": [
+    "styles/overlap-token-viewer.css"
+  ],
+  "languages": [
+    {
+      "lang": "en",
+      "name": "English",
+      "path": "lang/en.json"
+    },
+    {
+      "lang": "zh-Hans",
+      "name": "简体中文",
+      "path": "lang/zh-Hans.json"
+    }
+  ],
+  "flags": {
+    "canUpload": true
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "OTV.Title": "Overlap Token Viewer",
+  "OTV.ListPopup.Title": "Overlapping Tokens",
+  "OTV.ListPopup.Select": "Select",
+  "OTV.ListPopup.Target": "Target",
+  "OTV.ListPopup.NoTokens": "No overlapping tokens at this location.",
+  "OTV.Notification.ListKeyHint": "Hover over stacked tokens and press [{key}] to open the token list.",
+  "OTV.Settings.ListKey.Name": "Token List Shortcut Key",
+  "OTV.Settings.ListKey.Hint": "The keyboard shortcut to open the overlapping token list when hovering over stacked tokens.",
+  "OTV.Settings.MinOverlap.Name": "Minimum Overlap Count",
+  "OTV.Settings.MinOverlap.Hint": "The minimum number of tokens in a cell before the pie-chart display activates. Default: 2.",
+  "OTV.Settings.Enabled.Name": "Enable Module",
+  "OTV.Settings.Enabled.Hint": "Toggle the overlap token viewer on or off."
+}

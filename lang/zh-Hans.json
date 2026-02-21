@@ -1,0 +1,14 @@
+{
+  "OTV.Title": "重叠Token查看器",
+  "OTV.ListPopup.Title": "重叠的Token",
+  "OTV.ListPopup.Select": "选中",
+  "OTV.ListPopup.Target": "设为目标",
+  "OTV.ListPopup.NoTokens": "此位置没有重叠的Token。",
+  "OTV.Notification.ListKeyHint": "将鼠标悬停在堆叠Token上，按 [{key}] 打开Token列表。",
+  "OTV.Settings.ListKey.Name": "Token列表快捷键",
+  "OTV.Settings.ListKey.Hint": "悬停在堆叠Token上时，按此快捷键打开重叠Token列表。",
+  "OTV.Settings.MinOverlap.Name": "最小重叠数量",
+  "OTV.Settings.MinOverlap.Hint": "单元格中至少有多少个Token时才激活饼图显示。默认值：2。",
+  "OTV.Settings.Enabled.Name": "启用模块",
+  "OTV.Settings.Enabled.Hint": "开启或关闭重叠Token查看器。"
+}
