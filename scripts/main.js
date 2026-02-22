@@ -395,9 +395,17 @@ class OverlapTokenManager {
         const meshCy = 0;
         const meshR = Math.max(texW, texH) * 0.75;
 
+        // The mesh is rotated by token.document.rotation degrees.
+        // Since the mask is a child of mesh, it inherits that rotation.
+        // To make the slice appear at the correct SCREEN angle, we must
+        // counter-rotate the slice angles by the token's rotation.
+        const tokenRotRad = (token.document.rotation ?? 0) * (Math.PI / 180);
+        const meshStartAngle = startAngle - tokenRotRad;
+        const meshEndAngle = endAngle - tokenRotRad;
+
         meshMaskGfx = new PIXI.Graphics();
         meshMaskGfx.beginFill(0xffffff);
-        drawSlice(meshMaskGfx, meshCx, meshCy, meshR, startAngle, endAngle);
+        drawSlice(meshMaskGfx, meshCx, meshCy, meshR, meshStartAngle, meshEndAngle);
         meshMaskGfx.endFill();
 
         meshOriginalMask = mesh.mask;
@@ -497,17 +505,30 @@ class OverlapTokenManager {
       const texW = tex?.width ?? 1;
       const texH = tex?.height ?? 1;
 
+      // The mesh is rotated by token.document.rotation degrees.
+      // Our mask is a child of mesh, so it inherits that rotation.
+      // To cut holes at the correct SCREEN positions, we need to draw
+      // the mask in the mesh's pre-rotation local space, which means
+      // we must counter-rotate the coordinates by -rotation.
+      const tokenRotRad = (token.document.rotation ?? 0) * (Math.PI / 180);
+      const cosR = Math.cos(-tokenRotRad);
+      const sinR = Math.sin(-tokenRotRad);
+
       meshMaskGfx = new PIXI.Graphics();
-      // Full token area in texture space (anchor 0.5, 0.5 → centre is 0,0)
+
+      // The full token area must also be drawn counter-rotated.
+      // We draw a large enough rectangle that, after rotation, covers
+      // the entire texture. Use the diagonal as a safe radius.
+      const safeR = Math.sqrt(texW * texW + texH * texH) / 2 + 1;
       meshMaskGfx.beginFill(0xffffff);
-      meshMaskGfx.drawRect(-texW / 2, -texH / 2, texW, texH);
+      meshMaskGfx.drawRect(-safeR, -safeR, safeR * 2, safeR * 2);
       meshMaskGfx.endFill();
 
-      // Cut holes in texture space
-      // We need to map cell pixel coords → texture coords
-      // mesh maps tokenDocX..tokenDocX+tokenW → -texW/2..texW/2
+      // Cut holes in texture space, counter-rotated
       const scaleToTexX = texW / tokenW;
       const scaleToTexY = texH / tokenH;
+      const cellW = grid.sizeX ?? grid.size;
+      const cellH = grid.sizeY ?? grid.size;
 
       meshMaskGfx.beginHole();
       for (const cellKey of holeCells) {
@@ -515,12 +536,27 @@ class OverlapTokenManager {
         const cellTopLeft = grid.getTopLeftPoint({ i: ci, j: cj });
         const localX = cellTopLeft.x - tokenDocX;
         const localY = cellTopLeft.y - tokenDocY;
-        const cellW = grid.sizeX ?? grid.size;
-        const cellH = grid.sizeY ?? grid.size;
-        // Convert to texture space
-        const texLocalX = localX * scaleToTexX - texW / 2;
-        const texLocalY = localY * scaleToTexY - texH / 2;
-        meshMaskGfx.drawRect(texLocalX, texLocalY, cellW * scaleToTexX, cellH * scaleToTexY);
+        // Map to texture space centred at (0,0)
+        const cx = localX * scaleToTexX - texW / 2;
+        const cy = localY * scaleToTexY - texH / 2;
+        const cw = cellW * scaleToTexX;
+        const ch = cellH * scaleToTexY;
+        // Counter-rotate all 4 corners, then draw a polygon
+        const corners = [
+          [cx,      cy],
+          [cx + cw, cy],
+          [cx + cw, cy + ch],
+          [cx,      cy + ch],
+        ];
+        const rotated = corners.map(([px, py]) => [
+          px * cosR - py * sinR,
+          px * sinR + py * cosR,
+        ]);
+        meshMaskGfx.moveTo(rotated[0][0], rotated[0][1]);
+        for (let ri = 1; ri < rotated.length; ri++) {
+          meshMaskGfx.lineTo(rotated[ri][0], rotated[ri][1]);
+        }
+        meshMaskGfx.closePath();
       }
       meshMaskGfx.endHole();
 
